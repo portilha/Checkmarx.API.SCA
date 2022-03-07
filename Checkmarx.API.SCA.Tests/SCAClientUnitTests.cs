@@ -33,9 +33,9 @@ namespace Checkmarx.API.SCA.Tests
                 .AddUserSecrets<SCAClientUnitTests>();
 
             Configuration = builder.Build();
-            Username = Configuration["SCA:Username"];
-            Password = Configuration["SCA:Password"];
-            Tenant = Configuration["SCA:Tenant"];
+            Username = Configuration["Username"];
+            Password = Configuration["Password"];
+            Tenant = Configuration["Tenant"];
 
             Assert.IsNotNull(Username, "Please define the Username in the Secrets file");
             Assert.IsNotNull(Password, "Please define the Password in the Secrets file");
@@ -47,11 +47,11 @@ namespace Checkmarx.API.SCA.Tests
         [TestInitialize]
         public void InitiateTestGuid()
         {
-            string testGuid = Configuration["SCA:TestProject"];
+            string testGuid = Configuration["TestProject"];
             if (!string.IsNullOrWhiteSpace(testGuid))
                 TestProject = new Guid(testGuid);
 
-            string testScan = Configuration["SCA:TestScan"];
+            string testScan = Configuration["TestScan"];
             if (!string.IsNullOrWhiteSpace(testScan))
                 TestScan = new Guid(testScan);
         }
