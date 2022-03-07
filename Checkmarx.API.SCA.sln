@@ -1,0 +1,31 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.0.32126.317
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Checkmarx.API.SCA", ".\Checkmarx.API.SCA\Checkmarx.API.SCA.csproj", "{03BDC8A2-46C4-4E27-BAD3-A7D10FA212AB}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Checkmarx.API.SCA.Tests", ".\Checkmarx.API.SCA.Tests\Checkmarx.API.SCA.Tests.csproj", "{FA9ACF17-3E7E-45BB-A3B8-D5DD5BC81002}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{03BDC8A2-46C4-4E27-BAD3-A7D10FA212AB}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{03BDC8A2-46C4-4E27-BAD3-A7D10FA212AB}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{03BDC8A2-46C4-4E27-BAD3-A7D10FA212AB}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{03BDC8A2-46C4-4E27-BAD3-A7D10FA212AB}.Release|Any CPU.Build.0 = Release|Any CPU
+		{FA9ACF17-3E7E-45BB-A3B8-D5DD5BC81002}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{FA9ACF17-3E7E-45BB-A3B8-D5DD5BC81002}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{FA9ACF17-3E7E-45BB-A3B8-D5DD5BC81002}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{FA9ACF17-3E7E-45BB-A3B8-D5DD5BC81002}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {44B3D396-B5CC-4F2B-9029-49CD78C1040B}
+	EndGlobalSection
+EndGlobal

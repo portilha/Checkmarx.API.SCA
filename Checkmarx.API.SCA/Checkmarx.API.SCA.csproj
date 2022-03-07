@@ -1,0 +1,36 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>netcoreapp3.1</TargetFramework>
+	  <Version>1.0.0</Version>
+	  <Authors>Pedro Portilha</Authors>
+	  <Company>Checkmarx</Company>
+	  <Description>
+		  Checkmarx API SCA Services (Unofficial)
+		  It also provides access to the SCA API.
+	  </Description>
+	  <Copyright>Copyright ©2021</Copyright>
+	  <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
+	  <PackageIcon>CxIcon.png</PackageIcon>
+	  <PackageRequireLicenseAcceptance>false</PackageRequireLicenseAcceptance>
+	  <PackageLicenseExpression>MIT</PackageLicenseExpression>
+	  <RepositoryUrl>https://github.com/portilha/Checkmarx.API.SCA</RepositoryUrl>
+	  <RepositoryType>git</RepositoryType>
+	  <PackageReadmeFile>README.md</PackageReadmeFile>
+  </PropertyGroup>
+
+	<ItemGroup>
+		<EmbeddedResource Include="Assets\CxIcon.png">
+			<Pack>True</Pack>
+			<PackagePath></PackagePath>
+		</EmbeddedResource>
+	</ItemGroup>
+
+
+	<ItemGroup>
+		
+    <PackageReference Include="Checkmarx.API.AccessControl" Version="1.0.0" />
+		<None Include="..\README.md" Pack="true" PackagePath="\" />
+  </ItemGroup>
+
+</Project>
