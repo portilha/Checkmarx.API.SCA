@@ -18,6 +18,10 @@ namespace Checkmarx.API.SCA.Tests
         private static string Username;
         private static string Password;
         private static string Tenant;
+
+        public static string APIUrl { get; private set; }
+        public static string AcUrl { get; private set; }
+
         private static SCAClient _client;
 
         private Guid TestProject = Guid.Empty;
@@ -33,15 +37,19 @@ namespace Checkmarx.API.SCA.Tests
                 .AddUserSecrets<SCAClientUnitTests>();
 
             Configuration = builder.Build();
+
             Username = Configuration["Username"];
             Password = Configuration["Password"];
             Tenant = Configuration["Tenant"];
+
+            APIUrl = Configuration["APIUrl"];
+            AcUrl = Configuration["AcUrl"];
 
             Assert.IsNotNull(Username, "Please define the Username in the Secrets file");
             Assert.IsNotNull(Password, "Please define the Password in the Secrets file");
             Assert.IsNotNull(Tenant, "Please define the Tenant in the Secrets file");
 
-            _client = new SCAClient(Tenant, Username, Password);
+            _client = new SCAClient(Tenant, Username, Password, AcUrl, APIUrl);
         }
 
         [TestInitialize]
@@ -138,13 +146,73 @@ namespace Checkmarx.API.SCA.Tests
             }
         }
 
+        [TestMethod]
         public void ListAllProjects()
         {
+            var allUser = new Dictionary<string, UserViewModel>(StringComparer.OrdinalIgnoreCase);
+
+            foreach (var user in _client.AC.GetAllUsersDetailsAsync().Result)
+            {
+                if (!allUser.ContainsKey(user.UserName))
+                    allUser.Add(user.UserName, user);
+            }
+
+            StringBuilder stringBuilder = new StringBuilder("sep=;\nId;Name;Teams;CreationDate;User;Username\n");
+
             foreach (var project in _client.ClientSCA.GetProjectsAsync().Result)
             {
-                Trace.WriteLine(project.Id + "  " + project.Name);
+                if(project.CreatedOn <= (DateTime.Now - TimeSpan.FromDays(90)))
+                {
+                    continue;
+                }
+
+                var collection = _client.ClientSCA.GetScansForProjectAsync(project.Id).Result;
+
+                if (!collection.Any())
+                    continue;
+
+                var last = collection.Last();
+
+                var username = last.AdditionalProperties["username"].ToString();
+                var user = allUser.ContainsKey(username) ? allUser[username] : null;
+
+                var userName = user != null ? user.FirstName + " " + user.LastName  : "Not found"; 
+                
+                stringBuilder.AppendLine($"\"{project.Id}\";\"{project.Name}\";" +
+                    $"\"{string.Join(",",project.AssignedTeams)}\"" +
+                    $";\"{project.CreatedOn?.DateTime.ToShortDateString()}\"" +
+                    $";\"{userName}\";\"{username}\"");
+
+                // Trace.WriteLine(last.AdditionalProperties["username"]);
+
+                // Trace.WriteLine(project.Id + "  " + project.Name);
             }
+
+            File.WriteAllText(@"C:\Users\pedropo\OneDrive - Checkmarx\ASA Delivery\EMEA\BP P.L.C\3month.csv", stringBuilder.ToString());
         }
+
+        [TestMethod]
+        public void ListProjectsTests()
+        {
+
+            foreach (var item in _client.GetProjects())
+            {
+                var scans = _client.ClientSCA.GetScansForProjectAsync(item.Value.Id).Result;
+
+                Trace.WriteLine(item.Value);
+
+                var lastSCAa = scans.First();
+
+                if (lastSCAa != null)
+                {
+                   var result = _client.ClientSCA.GetScanReportAsync(lastSCAa.ScanId, "json").Result;
+                }
+
+                
+            }
+
+        }
+
 
         [TestMethod]
         public void GEtAllScanFromProject()

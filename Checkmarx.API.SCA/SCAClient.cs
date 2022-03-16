@@ -55,8 +55,9 @@ namespace Checkmarx.API.SCA
                     var token = Autenticate(_tenant, _username, _password);
                     _httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
 
-                    _httpClient.DefaultRequestHeaders.Add("Team", string.Empty);
+                    // _httpClient.DefaultRequestHeaders.Add("Team", string.Empty);
                     
+                    // _httpClient.DefaultRequestHeaders.Add("Host", Environment.MachineName);
 
                     _acHttpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
 
@@ -104,13 +105,14 @@ namespace Checkmarx.API.SCA
         private string Autenticate(string tenant, string username, string password)
         {
             var identityURL = $"{_acUrl}identity/connect/token";
+
             var kv = new Dictionary<string, string>
             {
                 { "grant_type", "password" },
                 { "client_id", "sca_resource_owner" },
                 { "scope", "sca_api access_control_api" },
                 { "username", username },
-                { "password", password },
+                { "password", password},
                 { "acr_values", "Tenant:" + tenant }
             };
             var req = new HttpRequestMessage(HttpMethod.Post, identityURL) { Content = new FormUrlEncodedContent(kv) };
@@ -131,6 +133,29 @@ namespace Checkmarx.API.SCA
                 ClientSCA.UpdateProjectsSettingsAsync(project.Id,
                             new API.SCA.ProjectSettings { EnableExploitablePath = true }).Wait();
             }
+        }
+
+
+        /// <summary>
+        /// Name -> Project
+        /// </summary>
+        /// <returns></returns>
+        public Dictionary<string, Project> GetProjects()
+        {
+            var scaProjectsKist = ClientSCA.GetProjectsAsync().Result;
+
+            var scaProjects = new Dictionary<string, Project>(StringComparer.InvariantCultureIgnoreCase);
+
+            // Support when there are duplicated project inside SCA.
+            foreach (var scaProj in scaProjectsKist)
+            {
+                if (scaProjects.ContainsKey(scaProj.Name))
+                    continue;
+
+                scaProjects.Add(scaProj.Name, scaProj);
+            }
+
+            return scaProjects;
         }
 
         public void ScanWithSourceCode(Guid projectID, string sourceCodePath)
