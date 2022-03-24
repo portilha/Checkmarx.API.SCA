@@ -27,6 +27,7 @@ namespace Checkmarx.API.SCA.Tests
         private Guid TestProject = Guid.Empty;
         private Guid TestScan = Guid.Empty;
 
+        // Defaults, 
         //private static string AC = "https://platform.checkmarx.net";
         //private static string APIURL = "https://api-sca.checkmarx.net";
 
@@ -81,7 +82,6 @@ namespace Checkmarx.API.SCA.Tests
             }
         }
 
-
         [TestMethod]
         public void CreateTeamTest()
         {
@@ -94,9 +94,8 @@ namespace Checkmarx.API.SCA.Tests
             Assert.IsTrue(teamId > 0);
         }
 
-
         [TestMethod]
-        public void DEleteTEamTEst()
+        public void DeleteTeamTest()
         {
             // _client.AC.DeleteTeamAsync(110437);
 
@@ -194,7 +193,6 @@ namespace Checkmarx.API.SCA.Tests
         [TestMethod]
         public void ListProjectsTests()
         {
-
             foreach (var item in _client.GetProjects())
             {
                 var scans = _client.ClientSCA.GetScansForProjectAsync(item.Value.Id).Result;
@@ -205,17 +203,14 @@ namespace Checkmarx.API.SCA.Tests
 
                 if (lastSCAa != null)
                 {
+                    // TODO: Make this request work
                    var result = _client.ClientSCA.GetScanReportAsync(lastSCAa.ScanId, "json").Result;
-                }
-
-                
+                }               
             }
-
         }
 
-
         [TestMethod]
-        public void GEtAllScanFromProject()
+        public void GetAllScanFromProject()
         {
             Assert.IsTrue(TestProject != Guid.Empty, "Please define a TestProjectGuid in the secrets file");
 
@@ -239,7 +234,6 @@ namespace Checkmarx.API.SCA.Tests
             Assert.IsNotNull(project);
         }
 
-
         [TestMethod]
         public void GetScan()
         {
@@ -257,7 +251,6 @@ namespace Checkmarx.API.SCA.Tests
                 Trace.WriteLine(item.Id);
             }
         }
-
 
         [TestMethod]
         public void GetAllDevPackagesTest()
@@ -298,7 +291,6 @@ namespace Checkmarx.API.SCA.Tests
             }
         }
 
-
         [TestMethod]
         public void GetVulnerabilitiesFromScanTest()
         {
@@ -322,8 +314,6 @@ namespace Checkmarx.API.SCA.Tests
             Assert.IsNotNull(riskReport);
 
         }
-
-
 
         [TestMethod]
         public void IgnoreVulnerabilityTest()

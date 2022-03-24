@@ -17,6 +17,8 @@
 	  <RepositoryUrl>https://github.com/portilha/Checkmarx.API.SCA</RepositoryUrl>
 	  <RepositoryType>git</RepositoryType>
 	  <PackageReadmeFile>README.md</PackageReadmeFile>
+	  <AssemblyVersion>1.0.0.1</AssemblyVersion>
+	  <FileVersion>1.0.0.1</FileVersion>
   </PropertyGroup>
 
 	<ItemGroup>
