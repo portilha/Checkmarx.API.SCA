@@ -1606,7 +1606,7 @@ namespace Checkmarx.API.SCA
 
         /// <returns>Success</returns>
         /// <exception cref="ApiException">A server side error occurred.</exception>
-        public System.Threading.Tasks.Task<GeneratedUploadLink> GenerateUploadLinkAsync(Body body)
+        public System.Threading.Tasks.Task<GeneratedUploadLink> GenerateUploadLinkAsync(ProjectBody body)
         {
             return GenerateUploadLinkAsync(body, System.Threading.CancellationToken.None);
         }
@@ -1614,7 +1614,7 @@ namespace Checkmarx.API.SCA
         /// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
         /// <returns>Success</returns>
         /// <exception cref="ApiException">A server side error occurred.</exception>
-        public async System.Threading.Tasks.Task<GeneratedUploadLink> GenerateUploadLinkAsync(Body body, System.Threading.CancellationToken cancellationToken)
+        public async System.Threading.Tasks.Task<GeneratedUploadLink> GenerateUploadLinkAsync(ProjectBody body, System.Threading.CancellationToken cancellationToken)
         {
             if (body == null)
                 throw new System.ArgumentNullException("body");
@@ -1765,7 +1765,7 @@ namespace Checkmarx.API.SCA
 
         /// <returns>Success</returns>
         /// <exception cref="ApiException">A server side error occurred.</exception>
-        public System.Threading.Tasks.Task<UploadCodeResponse> UploadedZipAsync(Body2 body)
+        public System.Threading.Tasks.Task<UploadCodeResponse> UploadedZipAsync(UploadSourceCodeBody body)
         {
             return UploadedZipAsync(body, System.Threading.CancellationToken.None);
         }
@@ -1773,7 +1773,7 @@ namespace Checkmarx.API.SCA
         /// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
         /// <returns>Success</returns>
         /// <exception cref="ApiException">A server side error occurred.</exception>
-        public async System.Threading.Tasks.Task<UploadCodeResponse> UploadedZipAsync(Body2 body, System.Threading.CancellationToken cancellationToken)
+        public async System.Threading.Tasks.Task<UploadCodeResponse> UploadedZipAsync(UploadSourceCodeBody body, System.Threading.CancellationToken cancellationToken)
         {
             if (body == null)
                 throw new System.ArgumentNullException("body");
@@ -2181,7 +2181,7 @@ namespace Checkmarx.API.SCA
     }
 
     [System.CodeDom.Compiler.GeneratedCode("NJsonSchema", "10.3.11.0 (Newtonsoft.Json v11.0.0.0)")]
-    public partial class Body
+    public partial class ProjectBody
     {
         /// <summary>request project Id to scan</summary>
         [Newtonsoft.Json.JsonProperty("projectId", Required = Newtonsoft.Json.Required.DisallowNull, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
@@ -2200,11 +2200,15 @@ namespace Checkmarx.API.SCA
     }
 
     [System.CodeDom.Compiler.GeneratedCode("NJsonSchema", "10.3.11.0 (Newtonsoft.Json v11.0.0.0)")]
-    public partial class Body2
+    public partial class UploadSourceCodeBody
     {
         /// <summary>request project Id to scan</summary>
         [Newtonsoft.Json.JsonProperty("projectId", Required = Newtonsoft.Json.Required.DisallowNull, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public System.Guid ProjectId { get; set; }
+
+        /// <summary>request project Id to scan</summary>
+        [Newtonsoft.Json.JsonProperty("type", Required = Newtonsoft.Json.Required.DisallowNull, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
+        public string Type { get; set; } = "upload";
 
         /// <summary>upload URL where you previously uploaded the code</summary>
         [Newtonsoft.Json.JsonProperty("uploadedFileUrl", Required = Newtonsoft.Json.Required.DisallowNull, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]

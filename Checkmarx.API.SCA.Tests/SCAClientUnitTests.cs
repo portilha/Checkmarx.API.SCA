@@ -83,23 +83,16 @@ namespace Checkmarx.API.SCA.Tests
         }
 
         [TestMethod]
-        public void CreateTeamTest()
+        public void ListProjects()
         {
-            string newTeam = @"/CxServer/SCA-PM/Champions/ASA/Test/MyAttempt/2Level/3Level/4Level/5KEve/LOL/ASDF";
+            foreach (var project in _client.GetProjects())
+            {
+                
 
-            var accessControlClient = _client.AC;
-
-            int teamId = accessControlClient.GetOrCreateTeam(newTeam);
-
-            Assert.IsTrue(teamId > 0);
+                Trace.WriteLine(project.Key + " " + project.Value.Id);
+            }
         }
 
-        [TestMethod]
-        public void DeleteTeamTest()
-        {
-            // _client.AC.DeleteTeamAsync(110437);
-
-        }
 
         [TestMethod]
         public void SCA_List_Users_Test()
@@ -387,6 +380,15 @@ namespace Checkmarx.API.SCA.Tests
 
             _client.ScanWithSourceCode(result.Id, @"\WebGoat-develop.zip");
 
+
+        }
+
+        [TestMethod]
+        public void ScanWithGitRepositoryTest()
+        {
+            var result =  _client.ScanWithGitRepository(new Guid("c500b7f8-24e8-4a71-9e94-62afd3e61927"), new Uri("https://github.com/WebGoat/WebGoat.git"));
+
+            Assert.IsNotNull(result);
 
         }
     }

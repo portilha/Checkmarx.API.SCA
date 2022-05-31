@@ -94,6 +94,7 @@ namespace Checkmarx.API.SCA
             _baseURL = new Uri(apiUrl);
         }
 
+
         public bool Connected
         {
             get
@@ -136,6 +137,8 @@ namespace Checkmarx.API.SCA
         }
 
 
+        
+
         /// <summary>
         /// Name -> Project
         /// </summary>
@@ -155,12 +158,14 @@ namespace Checkmarx.API.SCA
                 scaProjects.Add(scaProj.Name, scaProj);
             }
 
+            
+
             return scaProjects;
         }
 
         public void ScanWithSourceCode(Guid projectID, string sourceCodePath)
         {
-            var resultLink = ClientSCA.GenerateUploadLinkAsync(new Body
+            var resultLink = ClientSCA.GenerateUploadLinkAsync(new ProjectBody
             {
                 ProjectId = projectID
             }).Result;
@@ -170,11 +175,45 @@ namespace Checkmarx.API.SCA
                 ClientSCA.UploadLinkAsync(resultLink.UploadUrl, fs).Wait();
             }
 
-            var scanId = ClientSCA.UploadedZipAsync(new Body2
+            var scanId = ClientSCA.UploadedZipAsync(new UploadSourceCodeBody
             {
                 ProjectId = projectID,
                 UploadedFileUrl = resultLink.UploadUrl
             }).Result;
+        }
+
+        // github 
+        // guid projectid
+        // url 
+        // branch
+
+        /// <summary>
+        /// Scans the SCA project with a git repository.
+        /// </summary>
+        /// <param name="projectID">guid of the SCA project</param>
+        /// <param name="gitRepository">Url of the repository</param>
+        /// <param name="apiKey>null if the repository is public</param>
+        /// <exception cref="NotImplementedException"></exception>
+        public UploadCodeResponse ScanWithGitRepository(Guid projectID, Uri gitRepository, string apiKey = null)
+        {
+
+            throw new NotImplementedException();
+
+            //var resultLink = ClientSCA.GenerateUploadLinkAsync(new ProjectBody
+            //{
+            //    ProjectId = projectID
+            //}).Result;
+
+            // ClientSCA.UploadLinkAsync(resultLink.UploadUrl, fs).Wait();
+
+            var scanId = ClientSCA.UploadedZipAsync(new UploadSourceCodeBody
+            {
+                ProjectId = projectID,
+                Type = "git",
+                UploadedFileUrl = gitRepository
+            }).Result;
+
+            return scanId;
         }
     }
 }
