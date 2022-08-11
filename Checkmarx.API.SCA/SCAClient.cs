@@ -14,6 +14,9 @@ namespace Checkmarx.API.SCA
 {
     public class SCAClient
     {
+
+        public const string NOT_EXPLOITABLE_STATE = "NotExploitable";
+
         private Uri _acUrl;
         private Uri _baseURL;
 

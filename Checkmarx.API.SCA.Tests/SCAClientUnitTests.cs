@@ -419,7 +419,7 @@ namespace Checkmarx.API.SCA.Tests
 
                 foreach (var package in _client.ClientSCA.PackageStatesAsync(project.Id).Result)
                 {
-                    if (package.state == "NotExploitable")
+                    if (package.state == SCAClient.NOT_EXPLOITABLE_STATE)
                     {
                         Trace.WriteLine($"{project.Id} | {package.packageId} | {GetSCAVulnerabilityLink(package).AbsolutePath}");
                     }
