@@ -7,6 +7,7 @@ using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Text;
+using static Checkmarx.API.SCA.Client;
 
 namespace Checkmarx.API.SCA.Tests
 {
@@ -87,7 +88,7 @@ namespace Checkmarx.API.SCA.Tests
         {
             foreach (var project in _client.GetProjects())
             {
-                
+
 
                 Trace.WriteLine(project.Key + " " + project.Value.Id);
             }
@@ -113,16 +114,16 @@ namespace Checkmarx.API.SCA.Tests
                         FirstName = user.FirstName,
                         LastName = user.LastName,
                         AllowedIpList = user.AllowedIpList,
-                        CellPhoneNumber = user.CellPhoneNumber, 
-                        Country = user.Country, 
-                        Email = user.Email, 
+                        CellPhoneNumber = user.CellPhoneNumber,
+                        Country = user.Country,
+                        Email = user.Email,
                         JobTitle = user.JobTitle,
-                        LocaleId = user.LocaleId, 
+                        LocaleId = user.LocaleId,
                         Other = user.Other,
                         RoleIds = user.RoleIds,
                         TeamIds = user.TeamIds,
-                        PhoneNumber = user.PhoneNumber, 
-                        Active = user.Active,                         
+                        PhoneNumber = user.PhoneNumber,
+                        Active = user.Active,
                         ExpirationDate = new DateTimeOffset(new DateTime(2025, 10, 01))
                     }).Wait();
 
@@ -153,7 +154,7 @@ namespace Checkmarx.API.SCA.Tests
 
             foreach (var project in _client.ClientSCA.GetProjectsAsync().Result)
             {
-                if(project.CreatedOn <= (DateTime.Now - TimeSpan.FromDays(90)))
+                if (project.CreatedOn <= (DateTime.Now - TimeSpan.FromDays(90)))
                 {
                     continue;
                 }
@@ -168,10 +169,10 @@ namespace Checkmarx.API.SCA.Tests
                 var username = last.AdditionalProperties["username"].ToString();
                 var user = allUser.ContainsKey(username) ? allUser[username] : null;
 
-                var userName = user != null ? user.FirstName + " " + user.LastName  : "Not found"; 
-                
+                var userName = user != null ? user.FirstName + " " + user.LastName : "Not found";
+
                 stringBuilder.AppendLine($"\"{project.Id}\";\"{project.Name}\";" +
-                    $"\"{string.Join(",",project.AssignedTeams)}\"" +
+                    $"\"{string.Join(",", project.AssignedTeams)}\"" +
                     $";\"{project.CreatedOn?.DateTime.ToShortDateString()}\"" +
                     $";\"{userName}\";\"{username}\"");
 
@@ -197,8 +198,8 @@ namespace Checkmarx.API.SCA.Tests
                 if (lastSCAa != null)
                 {
                     // TODO: Make this request work
-                   var result = _client.ClientSCA.GetScanReportAsync(lastSCAa.ScanId, "json").Result;
-                }               
+                    var result = _client.ClientSCA.GetScanReportAsync(lastSCAa.ScanId, "json").Result;
+                }
             }
         }
 
@@ -386,10 +387,51 @@ namespace Checkmarx.API.SCA.Tests
         [TestMethod]
         public void ScanWithGitRepositoryTest()
         {
-            var result =  _client.ScanWithGitRepository(new Guid("c500b7f8-24e8-4a71-9e94-62afd3e61927"), new Uri("https://github.com/WebGoat/WebGoat.git"));
+            var result = _client.ScanWithGitRepository(new Guid("c500b7f8-24e8-4a71-9e94-62afd3e61927"), new Uri("https://github.com/WebGoat/WebGoat.git"));
 
             Assert.IsNotNull(result);
 
+        }
+
+
+        [TestMethod]
+        public void ListAllNotExploitableTest()
+        {
+
+            //foreach (var projNameProj in _client.GetProjects().Take(20))
+            //{
+
+            var project = _client.ClientSCA.GetProjectAsync("gs-spring-boot-docker-louis").Result;
+
+            Trace.WriteLine("Get Scans for " + project.Name);
+
+            //var scans = _client.ClientSCA.GetScansForProjectAsync(project.Id).Result;
+
+            //if (!scans.Any())
+            //{
+            //    Trace.WriteLine("Not scans found");
+            //    // continue;
+            //}
+
+            //foreach (var scan in scans)
+            //{
+            //    // var packages = client.ClientSCA.PackagesAsync(scan.ScanId).Result.ToDictionary(x => x.Id);
+
+                foreach (var package in _client.ClientSCA.PackageStatesAsync(project.Id).Result)
+                {
+                    if (package.state == "NotExploitable")
+                    {
+                        Trace.WriteLine($"{project.Id} | {package.packageId} | {GetSCAVulnerabilityLink(package).AbsolutePath}");
+                    }
+                }
+            //}
+            //}
+        }
+
+
+        public static Uri GetSCAVulnerabilityLink(PackageState package)
+        {
+            return new Uri($"https://sca.checkmarx.net/#/projects/{package.projectId}/reports/{package.packageId}/vulnerabilities/{package.vulnerabilityId}/vulnerabilityDetails");
         }
     }
 }

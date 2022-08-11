@@ -1298,19 +1298,19 @@ namespace Checkmarx.API.SCA
 
         #region Risk States
 
-        public System.Threading.Tasks.Task<System.Collections.Generic.ICollection<PackageStateGet>> PackageStatesAsync(System.Guid scanId)
+        public System.Threading.Tasks.Task<System.Collections.Generic.ICollection<PackageStateGet>> PackageStatesAsync(System.Guid projectId)
         {
-            return PackageStatesAsync(scanId, System.Threading.CancellationToken.None);
+            return PackageStatesAsync(projectId, System.Threading.CancellationToken.None);
         }
 
-        public async System.Threading.Tasks.Task<System.Collections.Generic.ICollection<PackageStateGet>> PackageStatesAsync(System.Guid scanId, System.Threading.CancellationToken cancellationToken)
+        public async System.Threading.Tasks.Task<System.Collections.Generic.ICollection<PackageStateGet>> PackageStatesAsync(System.Guid projectId, System.Threading.CancellationToken cancellationToken)
         {
-            if (scanId == null)
-                throw new System.ArgumentNullException("scanId");
+            if (projectId == null)
+                throw new System.ArgumentNullException("projectId");
 
             var urlBuilder_ = new System.Text.StringBuilder();
             urlBuilder_.Append(BaseUrl != null ? BaseUrl.TrimEnd('/') : "").Append("/risk-management/risk-state/{scanId}");
-            urlBuilder_.Replace("{scanId}", System.Uri.EscapeDataString(ConvertToString(scanId, System.Globalization.CultureInfo.InvariantCulture)));
+            urlBuilder_.Replace("{scanId}", System.Uri.EscapeDataString(ConvertToString(projectId, System.Globalization.CultureInfo.InvariantCulture)));
 
             var client_ = _httpClient;
             var disposeClient_ = false;
