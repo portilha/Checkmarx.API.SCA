@@ -113,16 +113,11 @@ namespace Checkmarx.API.SCA.Tests
         {
             Guid scanUID = new Guid("0068cba5-ed9f-4168-b4fb-dec07fe81448");
 
+            var scan = _client.ClientSCA.GetScanAsync(scanUID).Result;
+
             foreach (var package in _client.ClientSCA.PackagesAsync(scanUID).Result)
             {
-                
-
-                _client.ClientSCA.PackageRiskStateAsync(new PackageState
-                {
-                    packageId = package.Id, 
-                    state = "",
-                    
-                });
+                _client.SetPackageAsSecure(scan.ScanId, package.Id);
             }
 
         }
