@@ -88,10 +88,43 @@ namespace Checkmarx.API.SCA.Tests
         {
             foreach (var project in _client.GetProjects())
             {
-
-
                 Trace.WriteLine(project.Key + " " + project.Value.Id);
             }
+        }
+
+
+        [TestMethod]
+        public void GetPackagesByDependencyTest()
+        {
+            foreach (var project in _client.GetProjects())
+            {
+                foreach (var scan in _client.GetSuccessfullScansForProject(project.Value.Id))
+                {
+                    foreach (var package in _client.ClientSCA.PackagesAsync(scan.ScanId).Result)
+                    {
+                        Trace.WriteLine(package.PackageRepository);
+                    }
+                }
+            }
+        }
+
+        [TestMethod]
+        public void SetPackageAsSafeTest()
+        {
+            Guid scanUID = new Guid("0068cba5-ed9f-4168-b4fb-dec07fe81448");
+
+            foreach (var package in _client.ClientSCA.PackagesAsync(scanUID).Result)
+            {
+                
+
+                _client.ClientSCA.PackageRiskStateAsync(new PackageState
+                {
+                    packageId = package.Id, 
+                    state = "",
+                    
+                });
+            }
+
         }
 
 
@@ -267,10 +300,13 @@ namespace Checkmarx.API.SCA.Tests
                             Trace.WriteLine("\t-" + package.Id);
                         }
 
+
                         foreach (var dep in package.DependencyPaths)
                         {
                             foreach (var depdep in dep)
                             {
+
+
                                 if (depdep.IsDevelopment)
                                     Trace.WriteLine(depdep.Id);
                             }
@@ -417,13 +453,13 @@ namespace Checkmarx.API.SCA.Tests
             //{
             //    // var packages = client.ClientSCA.PackagesAsync(scan.ScanId).Result.ToDictionary(x => x.Id);
 
-                foreach (var package in _client.ClientSCA.PackageStatesAsync(project.Id).Result)
+            foreach (var package in _client.ClientSCA.PackageStatesAsync(project.Id).Result)
+            {
+                if (package.state == SCAClient.NOT_EXPLOITABLE_STATE)
                 {
-                    if (package.state == SCAClient.NOT_EXPLOITABLE_STATE)
-                    {
-                        Trace.WriteLine($"{project.Id} | {package.packageId} | {GetSCAVulnerabilityLink(package).AbsolutePath}");
-                    }
+                    Trace.WriteLine($"{project.Id} | {package.packageId} | {GetSCAVulnerabilityLink(package).AbsolutePath}");
                 }
+            }
             //}
             //}
         }

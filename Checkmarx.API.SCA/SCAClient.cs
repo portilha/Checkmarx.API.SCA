@@ -9,6 +9,7 @@ using System.Net.Http;
 using System.Net.Http.Headers;
 using System.Text;
 using System.Threading.Tasks;
+using System.Linq;
 
 namespace Checkmarx.API.SCA
 {
@@ -16,6 +17,8 @@ namespace Checkmarx.API.SCA
     {
 
         public const string NOT_EXPLOITABLE_STATE = "NotExploitable";
+
+        public const string SCAN_DONE = "Done";
 
         private Uri _acUrl;
         private Uri _baseURL;
@@ -217,6 +220,53 @@ namespace Checkmarx.API.SCA
             }).Result;
 
             return scanId;
+        }
+
+        /// <summary>
+        /// Returns all the scans with the Done status.
+        /// </summary>
+        /// <param name="projectId">Id of the projects</param>
+        /// <returns></returns>
+        public IEnumerable<Scan> GetSuccessfullScansForProject(Guid projectId)
+        {
+            return ClientSCA.GetScansForProjectAsync(projectId).Result.Where(s => s.Status?.Name == SCAN_DONE);
+        }
+
+        /// <summary>
+        /// Sets all the vulnerabilities of the package as NotExploitable
+        /// </summary>
+        /// <param name="projectId"></param>
+        /// <param name="packageId"></param>
+        /// <returns>Number of vulnerabilities found for the package</returns>
+        public int SetPackageAsSecure(Guid projectId, string packageId)
+        {
+            if (projectId == Guid.Empty)
+                throw new ArgumentOutOfRangeException(nameof(projectId));
+
+            if (string.IsNullOrWhiteSpace(packageId))
+                throw new ArgumentNullException(nameof(packageId));
+
+            var proj = ClientSCA.GetProjectAsync(projectId).Result;
+
+            int numberOfVulnerabilities = 0;
+
+            foreach (var scan in GetSuccessfullScansForProject(proj.Id))
+            {
+                foreach (var vulnerability in ClientSCA.VulnerabilitiesAsync(scan.ScanId).Result.Where(x => x.PackageId == packageId))
+                {
+                    numberOfVulnerabilities++;
+
+                    ClientSCA.PackageRiskStateAsync(new Client.PackageState
+                    {
+                        packageId = packageId,
+                        projectId = projectId,
+                        state = NOT_EXPLOITABLE_STATE,
+                        vulnerabilityId = vulnerability.Id
+                    }).Wait();
+                }
+            }
+
+            return numberOfVulnerabilities;
         }
     }
 }

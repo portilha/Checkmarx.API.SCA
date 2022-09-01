@@ -2469,7 +2469,7 @@ namespace Checkmarx.API.SCA
         [Newtonsoft.Json.JsonProperty("locations", Required = Newtonsoft.Json.Required.DisallowNull, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public System.Collections.Generic.ICollection<string> Locations { get; set; }
 
-        [Newtonsoft.Json.JsonProperty("packageRepository", Required = Newtonsoft.Json.Required.DisallowNull, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
+        [Newtonsoft.Json.JsonProperty("packageRepository", NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         // [Newtonsoft.Json.JsonConverter(typeof(Newtonsoft.Json.Converters.StringEnumConverter))]
         public string PackageRepository { get; set; }
 
@@ -2525,7 +2525,7 @@ namespace Checkmarx.API.SCA
         public System.DateTimeOffset PublishDate { get; set; }
 
         /// <summary>references to more info</summary>
-        [Newtonsoft.Json.JsonProperty("references", Required = Newtonsoft.Json.Required.DisallowNull, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
+        [Newtonsoft.Json.JsonProperty("references", NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public System.Collections.Generic.ICollection<System.Uri> References { get; set; }
 
         [Newtonsoft.Json.JsonProperty("description", Required = Newtonsoft.Json.Required.DisallowNull, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
@@ -2538,7 +2538,7 @@ namespace Checkmarx.API.SCA
         [Newtonsoft.Json.JsonProperty("isIgnored", Required = Newtonsoft.Json.Required.DisallowNull, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public bool IsIgnored { get; set; }
 
-        [Newtonsoft.Json.JsonProperty("cwe", Required = Newtonsoft.Json.Required.DisallowNull, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
+        [Newtonsoft.Json.JsonProperty("cwe", NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public string Cwe { get; set; }
 
         /// <summary>best fix version recommendation</summary>
