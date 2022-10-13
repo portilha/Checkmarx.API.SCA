@@ -486,20 +486,7 @@ namespace Checkmarx.API.SCA.Tests
             return new Uri($"https://sca.checkmarx.net/#/projects/{package.projectId}/reports/{""}/vulnerabilities/{package.vulnerabilityId}:{package.packageId}/vulnerabilityDetails");
         }
 
-        class PackageEqualizer : IEqualityComparer<PackageStateGet>
-        {
-            public bool Equals(PackageStateGet x, PackageStateGet y)
-            {
-                return x.vulnerabilityId == y.vulnerabilityId;
-            }
-
-            public int GetHashCode([DisallowNull] PackageStateGet obj)
-            {
-                return obj.vulnerabilityId.GetHashCode();
-            }
-
-
-        }
+     
 
         [TestMethod]
         public void GetPackageStateForAllPRojectTest()
@@ -516,7 +503,7 @@ namespace Checkmarx.API.SCA.Tests
                     Trace.WriteLine(project.Key);
                     foreach (var item in statesList)
                     {
-                        Trace.WriteLine($"{project.Value.Id} | {item.vulnerabilityId} | {item.packageId}");
+                        Trace.WriteLine($"{project.Value.Id} | {item.vulnerabilityId} | {item.packageId} | {item.state}");
                     }
                  
                 }
@@ -533,7 +520,7 @@ namespace Checkmarx.API.SCA.Tests
 
             var project = _client.ClientSCA.GetProjectAsync(new Guid("04977ce6-b764-455a-9060-dd992f7749f7")).Result;
 
-            var statesList = _client.ClientSCA.PackageStatesAsync(project.Id).Result.Distinct(new PackageEqualizer()).ToList();
+            var statesList = _client.ClientSCA.PackageStatesAsync(project.Id).Result.ToList();
 
             var states = statesList.ToDictionary(x => x.vulnerabilityId); 
 

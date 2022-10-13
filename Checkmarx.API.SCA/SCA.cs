@@ -14,6 +14,7 @@
 namespace Checkmarx.API.SCA
 {
     using System;
+    using System.Linq;
     using System = global::System;
 
     [System.CodeDom.Compiler.GeneratedCode("NSwag", "13.10.8.0 (NJsonSchema v10.3.11.0 (Newtonsoft.Json v11.0.0.0))")]
@@ -1298,12 +1299,12 @@ namespace Checkmarx.API.SCA
 
         #region Risk States
 
-        public System.Threading.Tasks.Task<System.Collections.Generic.ICollection<PackageStateGet>> PackageStatesAsync(System.Guid projectId)
+        public System.Threading.Tasks.Task<System.Collections.Generic.IEnumerable<PackageStateGet>> PackageStatesAsync(System.Guid projectId)
         {
             return PackageStatesAsync(projectId, System.Threading.CancellationToken.None);
         }
 
-        public async System.Threading.Tasks.Task<System.Collections.Generic.ICollection<PackageStateGet>> PackageStatesAsync(System.Guid projectId, System.Threading.CancellationToken cancellationToken)
+        public async System.Threading.Tasks.Task<System.Collections.Generic.IEnumerable<PackageStateGet>> PackageStatesAsync(System.Guid projectId, System.Threading.CancellationToken cancellationToken)
         {
             if (projectId == null)
                 throw new System.ArgumentNullException("projectId");
@@ -1349,7 +1350,7 @@ namespace Checkmarx.API.SCA
                             {
                                 throw new ApiException("Response was null which was not expected.", status_, objectResponse_.Text, headers_, null);
                             }
-                            return objectResponse_.Object;
+                            return objectResponse_.Object.Distinct(PackageEqualizer.Instance);
                         }
                         else
                         {
