@@ -2194,7 +2194,15 @@ namespace Checkmarx.API.SCA
             set { _additionalProperties = value; }
         }
 
+        public Uri GetOverviewLink()
+        {
+            return new Uri($"https://sca.checkmarx.net/#/projects/{Id}/overview");
+        }
 
+        public Uri GetScansLink()
+        {
+            return new Uri($"https://sca.checkmarx.net/#/projects/{Id}/scans");
+        }
     }
 
     [System.CodeDom.Compiler.GeneratedCode("NJsonSchema", "10.3.11.0 (Newtonsoft.Json v11.0.0.0)")]
@@ -2232,6 +2240,25 @@ namespace Checkmarx.API.SCA
             set { _additionalProperties = value; }
         }
 
+        public Uri ScanLink
+        {
+            get { return new Uri($"https://sca.checkmarx.net/#/projects/{ProjectId}/reports/{ScanId}"); }
+        }
+
+        public Uri GetPackagesLink()
+        {
+            return new Uri(ScanLink, "/packages/all");
+        }
+
+        public Uri GetRisksLink()
+        {
+            return new Uri(ScanLink, "/vulnerabilities/all");
+        }
+
+        public Uri GetPoliciesLink()
+        {
+            return new Uri(ScanLink, "/policies");
+        }
 
     }
 
@@ -2242,7 +2269,7 @@ namespace Checkmarx.API.SCA
         [Newtonsoft.Json.JsonProperty("projectId", Required = Newtonsoft.Json.Required.DisallowNull, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public System.Guid ProjectId { get; set; }
 
-        /// <summary>ID of the report. This is the scan ID of the ssociated scan</summary>
+        /// <summary>ID of the report. This is the scan ID of the associated scan</summary>
         [Newtonsoft.Json.JsonProperty("riskReportId", Required = Newtonsoft.Json.Required.DisallowNull, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public System.Guid RiskReportId { get; set; }
 
@@ -2499,7 +2526,16 @@ namespace Checkmarx.API.SCA
         }
 
 
-    }
+        public Uri PackageLink(Guid projectId, Guid scanId)
+        {
+            return new Uri($"https://sca.checkmarx.net/#/projects/{projectId}/reports/{scanId}/packages/{Id}/");
+        }
+
+        public Uri PackageOverviewLink(Guid projectId, Guid scanId)
+        {
+            return new Uri(PackageLink(projectId, scanId), "/packageDetails");
+        }
+        }
 
     [System.CodeDom.Compiler.GeneratedCode("NJsonSchema", "10.3.11.0 (Newtonsoft.Json v11.0.0.0)")]
     public partial class Vulnerability
@@ -2554,6 +2590,11 @@ namespace Checkmarx.API.SCA
             set { _additionalProperties = value; }
         }
 
+
+        public Uri VulnerabilityLink(Uri packageUri)
+        {
+            return new Uri(packageUri.AbsoluteUri + $"{Id}:{PackageId}/vulnerabilityDetails");
+        }
 
     }
 

@@ -268,5 +268,7 @@ namespace Checkmarx.API.SCA
 
             return numberOfVulnerabilities;
         }
+
+      
     }
 }
