@@ -2535,7 +2535,9 @@ namespace Checkmarx.API.SCA
         {
             return new Uri(PackageLink(projectId, scanId), "/packageDetails");
         }
-        }
+
+      
+    }
 
     [System.CodeDom.Compiler.GeneratedCode("NJsonSchema", "10.3.11.0 (Newtonsoft.Json v11.0.0.0)")]
     public partial class Vulnerability
@@ -2591,9 +2593,9 @@ namespace Checkmarx.API.SCA
         }
 
 
-        public Uri VulnerabilityLink(Uri packageUri)
+        public Uri VulnerabilityLink(Uri scanLink)
         {
-            return new Uri(packageUri.AbsoluteUri + $"{Id}:{PackageId}/vulnerabilityDetails");
+            return new Uri(scanLink.AbsoluteUri + $"/vulnerabilities/{Id}:{PackageId}/vulnerabilityDetails");
         }
 
     }

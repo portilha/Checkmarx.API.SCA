@@ -4,8 +4,10 @@ using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.Diagnostics.CodeAnalysis;
 using System.IO;
 using System.Linq;
+using System.Runtime.CompilerServices;
 using System.Text;
 using static Checkmarx.API.SCA.Client;
 
@@ -324,11 +326,11 @@ namespace Checkmarx.API.SCA.Tests
 
             var vulns = _client.ClientSCA.VulnerabilitiesAsync(TestScan).Result;
 
-            
+
 
             foreach (Vulnerability vulnerabiltity in vulns)
             {
-                Trace.WriteLine(String.Format("|{0,60}|{1,20}|{2,15}|{3,10}|{4,10}|{5}", 
+                Trace.WriteLine(String.Format("|{0,60}|{1,20}|{2,15}|{3,10}|{4,10}|{5}",
                     vulnerabiltity.PackageId, vulnerabiltity.CveName, vulnerabiltity.Id, vulnerabiltity.IsIgnored, vulnerabiltity.Severity.ToString(), vulnerabiltity.Description));
             }
         }
@@ -435,7 +437,7 @@ namespace Checkmarx.API.SCA.Tests
             //foreach (var projNameProj in _client.GetProjects().Take(20))
             //{
 
-            var project = _client.ClientSCA.GetProjectAsync("ScaProject_Tony_20221011-2").Result;
+            var project = _client.ClientSCA.GetProjectAsync(new Guid("04977ce6-b764-455a-9060-dd992f7749f7")).Result;
 
             Trace.WriteLine("Get Scans for " + project.Name + " " + project.GetScansLink().AbsoluteUri);
 
@@ -453,10 +455,9 @@ namespace Checkmarx.API.SCA.Tests
 
             foreach (var package in _client.ClientSCA.PackageStatesAsync(project.Id).Result)
             {
-                if (package.state == SCAClient.NOT_EXPLOITABLE_STATE)
-                {
-                    Trace.WriteLine($"{project.Id} | {package.packageId} | {GetSCAVulnerabilityLink(package).AbsoluteUri}");
-                }
+
+                Trace.WriteLine($"{project.Id} | {package.packageId} | {GetSCAVulnerabilityLink(package).AbsoluteUri}");
+
             }
             //}
             //}
@@ -474,7 +475,7 @@ namespace Checkmarx.API.SCA.Tests
                     {
                         Trace.WriteLine($"{project.Id} | {package.packageId} | {GetSCAVulnerabilityLink(package).AbsoluteUri}");
                     }
-                } 
+                }
             }
 
         }
@@ -485,6 +486,44 @@ namespace Checkmarx.API.SCA.Tests
             return new Uri($"https://sca.checkmarx.net/#/projects/{package.projectId}/reports/{""}/vulnerabilities/{package.vulnerabilityId}:{package.packageId}/vulnerabilityDetails");
         }
 
+        class PackageEqualizer : IEqualityComparer<PackageStateGet>
+        {
+            public bool Equals(PackageStateGet x, PackageStateGet y)
+            {
+                return x.vulnerabilityId == y.vulnerabilityId;
+            }
+
+            public int GetHashCode([DisallowNull] PackageStateGet obj)
+            {
+                return obj.vulnerabilityId.GetHashCode();
+            }
+
+
+        }
+
+        [TestMethod]
+        public void GetPackageStateForAllPRojectTest()
+        {
+            foreach (var project in _client.GetProjects())
+            {
+                var statesList = _client.ClientSCA.PackageStatesAsync(project.Value.Id).Result;
+                try
+                {
+                    var states = statesList.ToDictionary(x => x.vulnerabilityId);
+                }
+                catch (Exception)
+                {
+                    Trace.WriteLine(project.Key);
+                    foreach (var item in statesList)
+                    {
+                        Trace.WriteLine($"{project.Value.Id} | {item.vulnerabilityId} | {item.packageId}");
+                    }
+                 
+                }
+            }
+        }
+
+
         [TestMethod]
         public void FindFixedVulnerabilitiesTest()
         {
@@ -492,20 +531,31 @@ namespace Checkmarx.API.SCA.Tests
             // Acumular os packages por scan
             // Descobrir se ainda estão no scan seguinte...
 
-            foreach (var project in _client.GetProjects())
+            var project = _client.ClientSCA.GetProjectAsync(new Guid("04977ce6-b764-455a-9060-dd992f7749f7")).Result;
+
+            var statesList = _client.ClientSCA.PackageStatesAsync(project.Id).Result.Distinct(new PackageEqualizer()).ToList();
+
+            var states = statesList.ToDictionary(x => x.vulnerabilityId); 
+
+            foreach (var scan in _client.GetSuccessfullScansForProject(project.Id))
             {
-                foreach (var scan in _client.GetSuccessfullScansForProject(project.Value.Id))
+                // var packages = _client.ClientSCA.PackagesAsync(scan.ScanId).Result.ToDictionary(x => x.Id);
+
+                foreach (var vulnerability in _client.ClientSCA.VulnerabilitiesAsync(scan.ScanId).Result)
                 {
-                    var packages = _client.ClientSCA.PackagesAsync(scan.ScanId).Result.ToDictionary(x => x.Id);
+                    string state = "To Verify";
 
-                    foreach (var vulnerability in _client.ClientSCA.VulnerabilitiesAsync(scan.ScanId).Result)
-                    {
-                        var link = vulnerability.VulnerabilityLink(packages[vulnerability.PackageId].PackageLink(project.Value.Id, scan.ScanId));
+                    string key =  vulnerability.Id;
 
-                        Trace.WriteLine(link.AbsoluteUri);
-                    }
+                    if (states.ContainsKey(key))
+                        state = states[key].state;
+
+                    var link = vulnerability.VulnerabilityLink(scan.ScanLink);
+
+                    Trace.WriteLine(state + " :: " + link.AbsoluteUri);
                 }
             }
+
         }
     }
 }
