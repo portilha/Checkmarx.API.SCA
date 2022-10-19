@@ -62,7 +62,7 @@ namespace Checkmarx.API.SCA
                     _httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
 
                     // _httpClient.DefaultRequestHeaders.Add("Team", string.Empty);
-                    
+
                     // _httpClient.DefaultRequestHeaders.Add("Host", Environment.MachineName);
 
                     _acHttpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
@@ -143,7 +143,7 @@ namespace Checkmarx.API.SCA
         }
 
 
-        
+
 
         /// <summary>
         /// Name -> Project
@@ -164,7 +164,7 @@ namespace Checkmarx.API.SCA
                 scaProjects.Add(scaProj.Name, scaProj);
             }
 
-            
+
 
             return scaProjects;
         }
@@ -269,6 +269,23 @@ namespace Checkmarx.API.SCA
             return numberOfVulnerabilities;
         }
 
-      
+        /// <summary>
+        /// Generates an unique key for the vulnerability.
+        /// </summary>
+        /// <param name="project"></param>
+        /// <param name="vulnerability"></param>
+        /// <returns></returns>
+        public string GetVulnerabilityUniqueKey(Vulnerability vulnerability, Project project)
+        {
+            if (project == null)
+                throw new ArgumentNullException(nameof(project));
+            
+            if (vulnerability == null)
+                throw new ArgumentNullException(nameof(vulnerability));
+
+            return $"{project.Id.ToString("D")}:{vulnerability.Id}";
+        }
+
+
     }
 }

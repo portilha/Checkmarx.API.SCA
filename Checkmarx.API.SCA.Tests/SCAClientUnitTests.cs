@@ -434,7 +434,7 @@ namespace Checkmarx.API.SCA.Tests
         public void ListAllNotExploitableTest()
         {
 
-            foreach (var projNameProj in _client.GetProjects().Take(20))
+            foreach (var projNameProj in _client.GetProjects().Take(120))
             {
                 var project = _client.ClientSCA.GetProjectAsync(projNameProj.Value.Id).Result;
 
