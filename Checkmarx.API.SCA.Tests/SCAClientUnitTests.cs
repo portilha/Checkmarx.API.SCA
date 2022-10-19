@@ -219,17 +219,9 @@ namespace Checkmarx.API.SCA.Tests
         {
             foreach (var item in _client.GetProjects())
             {
-                var scans = _client.ClientSCA.GetScansForProjectAsync(item.Value.Id).Result;
+                               // TODO: Make this request work
+                
 
-                Trace.WriteLine(item.Value);
-
-                var lastSCAa = scans.First();
-
-                if (lastSCAa != null)
-                {
-                    // TODO: Make this request work
-                    var result = _client.ClientSCA.GetScanReportAsync(lastSCAa.ScanId, "json").Result;
-                }
             }
         }
 
@@ -433,8 +425,7 @@ namespace Checkmarx.API.SCA.Tests
         [TestMethod]
         public void ListAllNotExploitableTest()
         {
-
-            foreach (var projNameProj in _client.GetProjects().Take(120))
+            foreach (var projNameProj in _client.GetProjects())
             {
                 var project = _client.ClientSCA.GetProjectAsync(projNameProj.Value.Id).Result;
 
@@ -464,7 +455,6 @@ namespace Checkmarx.API.SCA.Tests
 
                         Trace.WriteLine(state + " | " + vulnerability.VulnerabilityLink(scan.ScanLink).AbsoluteUri);
                     }
-
                 }
             }
         }
@@ -509,6 +499,14 @@ namespace Checkmarx.API.SCA.Tests
 
 
         [TestMethod]
+        public void ReScanProjectTest()
+        {
+            _client.ClientSCA.ReCalculate(TestProject).Wait();
+
+        }
+
+
+        [TestMethod]
         public void FindFixedVulnerabilitiesTest()
         {
             // List os scans 
@@ -540,6 +538,30 @@ namespace Checkmarx.API.SCA.Tests
                 }
             }
 
+        }
+
+
+        [TestMethod]
+        public void GetJsonReportTest()
+        {
+            var result = _client.ClientSCA.GetScanReportAsync(TestScan, "json", ReportSection.Licenses | ReportSection.Policies).Result;
+
+            Assert.IsNotNull(result);
+
+            File.WriteAllBytes($@"scan.json", result);
+        }
+
+
+        [TestMethod]
+        public void REportSEctionTest()
+        {
+            Assert.IsTrue(ReportSection.All.HasFlag(ReportSection.Licenses));
+            Assert.IsTrue(ReportSection.All.HasFlag(ReportSection.Vulnerabilities));
+            Assert.IsTrue(ReportSection.All.HasFlag(ReportSection.Packages));
+            Assert.IsTrue(ReportSection.All.HasFlag(ReportSection.Policies));
+
+            Assert.IsTrue(ReportSection.Policies.HasFlag(ReportSection.Policies));
+            Assert.IsFalse(ReportSection.Policies.HasFlag(ReportSection.Licenses));
         }
     }
 }

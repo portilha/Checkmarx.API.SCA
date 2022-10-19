@@ -14,7 +14,13 @@
 namespace Checkmarx.API.SCA
 {
     using System;
+    using System.Collections.Generic;
+    using System.IO;
     using System.Linq;
+    using System.Net;
+    using System.Net.Http;
+    using System.Net.Http.Headers;
+    using System.Reflection.Metadata;
     using System = global::System;
 
     [System.CodeDom.Compiler.GeneratedCode("NSwag", "13.10.8.0 (NJsonSchema v10.3.11.0 (Newtonsoft.Json v11.0.0.0))")]
@@ -1139,26 +1145,42 @@ namespace Checkmarx.API.SCA
             }
         }
 
+
+
+
         /// <returns>Success</returns>
         /// <exception cref="ApiException">A server side error occurred.</exception>
-        public System.Threading.Tasks.Task<string> GetScanReportAsync(System.Guid scanId, string format = "pdf", string dataType = "dataType[]=all")
+        public System.Threading.Tasks.Task<byte[]> GetScanReportAsync(System.Guid scanId, string format = "json", ReportSection reportSections = ReportSection.All)
         {
-            return GetScanReportAsync(scanId, format, dataType, System.Threading.CancellationToken.None);
+            return GetScanReportAsync(scanId, format, reportSections, System.Threading.CancellationToken.None);
         }
 
         /// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
         /// <returns>Success</returns>
         /// <exception cref="ApiException">A server side error occurred.</exception>
-        public async System.Threading.Tasks.Task<string> GetScanReportAsync(System.Guid scanId, string format, string dataType, System.Threading.CancellationToken cancellationToken)
+        public async System.Threading.Tasks.Task<byte[]> GetScanReportAsync(System.Guid scanId, string format, ReportSection reportSections, System.Threading.CancellationToken cancellationToken)
         {
-            // format=pdf&dataType[]=Vulnerabilities&dataType[]=Licenses
-
             if (scanId == null)
                 throw new System.ArgumentNullException("scanId");
 
+            List<string> dataTypes = new List<string>() { "all" };
+
+            if (reportSections != ReportSection.All)
+            {
+                dataTypes.Clear();
+
+                if (reportSections.HasFlag(ReportSection.Licenses))
+                    dataTypes.Add("Licenses");
+                if (reportSections.HasFlag(ReportSection.Vulnerabilities))
+                    dataTypes.Add("Vulnerabilities");
+                if (reportSections.HasFlag(ReportSection.Packages))
+                    dataTypes.Add("Packages");
+                if (reportSections.HasFlag(ReportSection.Policies))
+                    dataTypes.Add("Policies");
+            }
+
             var urlBuilder_ = new System.Text.StringBuilder();
-            urlBuilder_.Append(BaseUrl != null ? BaseUrl.TrimEnd('/') : "").Append($"/risk-management/risk-reports/{scanId}/export?format={format}&{dataType}");
-            urlBuilder_.Replace("{scanId}", System.Uri.EscapeDataString(ConvertToString(scanId, System.Globalization.CultureInfo.InvariantCulture)));
+            urlBuilder_.Append(BaseUrl != null ? BaseUrl.TrimEnd('/') : "").Append($"/risk-management/risk-reports/{scanId}/export?format={format}&{string.Join("&", dataTypes.Select(x => "dataType[]=" + x))}");
 
             var client_ = _httpClient;
             var disposeClient_ = false;
@@ -1192,12 +1214,7 @@ namespace Checkmarx.API.SCA
                         var status_ = (int)response_.StatusCode;
                         if (status_ == 200)
                         {
-                            var objectResponse_ = await ReadObjectResponseAsync<string>(response_, headers_, cancellationToken).ConfigureAwait(false);
-                            if (objectResponse_.Object == null)
-                            {
-                                throw new ApiException("Response was null which was not expected.", status_, objectResponse_.Text, headers_, null);
-                            }
-                            return objectResponse_.Object;
+                            return await response_.Content.ReadAsByteArrayAsync();
                         }
                         else
                         {
@@ -1619,6 +1636,102 @@ namespace Checkmarx.API.SCA
                     client_.Dispose();
             }
         }
+
+
+        public System.Threading.Tasks.Task ReCalculate(Guid projectId)
+        {
+            return ReCalculate(projectId, System.Threading.CancellationToken.None);
+        }
+
+        /// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
+        /// <returns>Success</returns>
+        /// <exception cref="ApiException">A server side error occurred.</exception>
+        public async System.Threading.Tasks.Task ReCalculate(Guid projectId, System.Threading.CancellationToken cancellationToken)
+        {
+            throw new NotSupportedException();
+
+            if (projectId == null)
+                throw new System.ArgumentNullException("projectId");
+
+            var urlBuilder_ = new System.Text.StringBuilder();
+            urlBuilder_.Append(BaseUrl != null ? BaseUrl.TrimEnd('/') : "").Append("/scan-runner/scans/recalculate");
+
+            var client_ = _httpClient;
+            var disposeClient_ = false;
+            try
+            {
+                using (var request_ = new System.Net.Http.HttpRequestMessage())
+                {
+                    string boundary = "------WebKitFormBoundaryGez6PYHRL4AovH2p";
+
+                    MultipartFormDataContent content = new MultipartFormDataContent();
+                    //focontent.Add(new StringContent(projectId.ToString()), "projectId");
+
+                    string postData = string.Format("{0}\r\nContent-Disposition: form-data; name=\"{1}\"\r\n\r\n{2}\r\n{0}--",
+                   boundary,
+                   "projectId",
+                   projectId.ToString());
+
+
+                    //content.Add(new StringContent(postData));
+
+                    //// form.Add(new StringContent(postData));
+
+                    //request_.Headers.ContentDisposition =
+                    //        new ContentDispositionHeaderValue("form-data") //<- 'form-data' instead of 'attachment'
+                    //        {
+                    //            Name = "projectId", // <- included line...
+                                
+                    //        }; 
+                    
+                    request_.Content = new StringContent(postData);
+                    request_.Method = new System.Net.Http.HttpMethod("POST");
+
+                    PrepareRequest(client_, request_, urlBuilder_);
+
+                    var url_ = urlBuilder_.ToString();
+                    request_.RequestUri = new System.Uri(url_, System.UriKind.RelativeOrAbsolute);
+
+                    PrepareRequest(client_, request_, url_);
+
+                    var response_ = await client_.SendAsync(request_, System.Net.Http.HttpCompletionOption.ResponseHeadersRead, cancellationToken).ConfigureAwait(false);
+                    var disposeResponse_ = true;
+                    try
+                    {
+                        var headers_ = System.Linq.Enumerable.ToDictionary(response_.Headers, h_ => h_.Key, h_ => h_.Value);
+                        if (response_.Content != null && response_.Content.Headers != null)
+                        {
+                            foreach (var item_ in response_.Content.Headers)
+                                headers_[item_.Key] = item_.Value;
+                        }
+
+                        ProcessResponse(client_, response_);
+
+                        var status_ = (int)response_.StatusCode;
+                        if (status_ == 201)
+                        {
+                            return;
+                        }
+                        else
+                        {
+                            var responseData_ = response_.Content == null ? null : await response_.Content.ReadAsStringAsync().ConfigureAwait(false);
+                            throw new ApiException("The HTTP status code of the response was not expected (" + status_ + ").", status_, responseData_, headers_, null);
+                        }
+                    }
+                    finally
+                    {
+                        if (disposeResponse_)
+                            response_.Dispose();
+                    }
+                }
+            }
+            finally
+            {
+                if (disposeClient_)
+                    client_.Dispose();
+            }
+        }
+
 
         /// <returns>Success</returns>
         /// <exception cref="ApiException">A server side error occurred.</exception>
@@ -2116,6 +2229,8 @@ namespace Checkmarx.API.SCA
             var result = System.Convert.ToString(value, cultureInfo);
             return result == null ? "" : result;
         }
+
+
     }
 
     [System.CodeDom.Compiler.GeneratedCode("NJsonSchema", "10.3.11.0 (Newtonsoft.Json v11.0.0.0)")]
@@ -2544,7 +2659,7 @@ namespace Checkmarx.API.SCA
             return new Uri(PackageLink(projectId, scanId), "/packageDetails");
         }
 
-      
+
     }
 
     [System.CodeDom.Compiler.GeneratedCode("NJsonSchema", "10.3.11.0 (Newtonsoft.Json v11.0.0.0)")]
