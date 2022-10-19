@@ -1310,8 +1310,8 @@ namespace Checkmarx.API.SCA
                 throw new System.ArgumentNullException("projectId");
 
             var urlBuilder_ = new System.Text.StringBuilder();
-            urlBuilder_.Append(BaseUrl != null ? BaseUrl.TrimEnd('/') : "").Append("/risk-management/risk-state/{scanId}");
-            urlBuilder_.Replace("{scanId}", System.Uri.EscapeDataString(ConvertToString(projectId, System.Globalization.CultureInfo.InvariantCulture)));
+            urlBuilder_.Append(BaseUrl != null ? BaseUrl.TrimEnd('/') : "").Append("/risk-management/risk-state/{projectId}");
+            urlBuilder_.Replace("{projectId}", System.Uri.EscapeDataString(ConvertToString(projectId, System.Globalization.CultureInfo.InvariantCulture)));
 
             var client_ = _httpClient;
             var disposeClient_ = false;
@@ -1350,7 +1350,7 @@ namespace Checkmarx.API.SCA
                             {
                                 throw new ApiException("Response was null which was not expected.", status_, objectResponse_.Text, headers_, null);
                             }
-                            return objectResponse_.Object.Distinct(PackageEqualizer.Instance);
+                            return objectResponse_.Object;
                         }
                         else
                         {
@@ -1371,6 +1371,13 @@ namespace Checkmarx.API.SCA
                     client_.Dispose();
             }
         }
+
+        public System.Threading.Tasks.Task<System.Collections.Generic.IEnumerable<PackageStateGet>> GetLatestPackageStatesAsync(System.Guid projectId)
+        {
+            return PackageStatesAsync(projectId, System.Threading.CancellationToken.None).ContinueWith<System.Collections.Generic.IEnumerable<PackageStateGet>>(x => x.Result.OrderByDescending(x => x.createdOn).Distinct(PackageEqualizer.Instance));
+        }
+
+
 
         public class PackageState
         {

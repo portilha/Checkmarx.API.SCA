@@ -15,8 +15,8 @@ namespace Checkmarx.API.SCA
 {
     public class SCAClient
     {
-
         public const string NOT_EXPLOITABLE_STATE = "NotExploitable";
+        public const string TO_VERIFY = "ToVerify";
 
         public const string SCAN_DONE = "Done";
 
