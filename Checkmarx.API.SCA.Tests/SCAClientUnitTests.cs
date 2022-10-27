@@ -501,8 +501,7 @@ namespace Checkmarx.API.SCA.Tests
         [TestMethod]
         public void ReScanProjectTest()
         {
-            _client.ClientSCA.ReCalculate(TestProject).Wait();
-
+            _client.ClientSCA.RecalculateProjectAsync(TestProject).Wait();
         }
 
 
