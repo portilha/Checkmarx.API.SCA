@@ -86,11 +86,66 @@ namespace Checkmarx.API.SCA.Tests
         }
 
         [TestMethod]
+        public void GetTagsTest()
+        {
+            var project = _client.ClientSCA.GetProjectAsync("Gradle-shashank").Result;
+
+            foreach (var item in project.Tags)
+            {
+                Trace.WriteLine(item.Key + " -> " + item.Value);
+            }
+        }
+
+
+        [TestMethod]
+        public void UpdatesTagsTest()
+        {
+            var project = _client.ClientSCA.GetProjectAsync("Gradle-shashank").Result;
+
+            Trace.WriteLine("# Tags");
+
+            foreach (var item in project.Tags)
+            {
+                Trace.WriteLine(item.Key + " -> " + item.Value);
+            }
+
+            Trace.WriteLine("# Assigned Teams");
+            foreach (var team in project.AssignedTeams)
+            {
+                Trace.WriteLine(team);
+            }
+
+            _client.ClientSCA.UpdateProjectAsync(project.Id, new UpdateProject
+            {
+                Name = project.Name,
+                AssignedTeams = project.AssignedTeams,
+                Tags = new Dictionary<string,string>() { { "Branch" , "main" } },
+                AdditionalProperties = project.AdditionalProperties
+
+            }).Wait();
+
+            project = _client.ClientSCA.GetProjectAsync("Gradle-shashank").Result;
+
+            Trace.WriteLine("# Tags");
+
+            foreach (var item in project.Tags)
+            {
+                Trace.WriteLine(item.Key + " -> " + item.Value);
+            }
+
+        }
+
+        [TestMethod]
         public void ListProjects()
         {
             foreach (var project in _client.GetProjects())
             {
                 Trace.WriteLine(project.Key + " " + project.Value.Id);
+
+                foreach (var item in project.Value.Tags)
+                {
+                    Trace.WriteLine("\t\t" + item.Key + " -> " + item.Value);
+                }
             }
         }
 
@@ -219,8 +274,8 @@ namespace Checkmarx.API.SCA.Tests
         {
             foreach (var item in _client.GetProjects())
             {
-                               // TODO: Make this request work
-                
+                // TODO: Make this request work
+
 
             }
         }

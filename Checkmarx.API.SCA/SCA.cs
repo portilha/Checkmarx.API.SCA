@@ -478,7 +478,7 @@ namespace Checkmarx.API.SCA
                         ProcessResponse(client_, response_);
 
                         var status_ = (int)response_.StatusCode;
-                        if (status_ == 200)
+                        if (status_ == 204)
                         {
                             return;
                         }
@@ -2279,6 +2279,15 @@ namespace Checkmarx.API.SCA
         [Newtonsoft.Json.JsonProperty("Name", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public string Name { get; set; }
 
+        private System.Collections.Generic.IDictionary<string, string> _tags = new System.Collections.Generic.Dictionary<string, string>();
+
+        [Newtonsoft.Json.JsonProperty("tags", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
+        public System.Collections.Generic.IDictionary<string, string> Tags
+        {
+            get { return _tags; }
+            set { _tags = value; }
+        }
+
         [Newtonsoft.Json.JsonProperty("AssignedTeams", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public System.Collections.Generic.ICollection<string> AssignedTeams { get; set; }
 
@@ -2310,6 +2319,17 @@ namespace Checkmarx.API.SCA
 
         [Newtonsoft.Json.JsonProperty("assignedTeams", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public System.Collections.Generic.ICollection<string> AssignedTeams { get; set; }
+
+
+        private System.Collections.Generic.IDictionary<string, string> _tags = new System.Collections.Generic.Dictionary<string, string>();
+
+        [Newtonsoft.Json.JsonProperty("tags", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
+        public System.Collections.Generic.IDictionary<string, string> Tags
+        {
+            get { return _tags; }
+            set { _tags = value; }
+        }
+
 
         [Newtonsoft.Json.JsonProperty("Branch", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public string Branch { get; set; }
