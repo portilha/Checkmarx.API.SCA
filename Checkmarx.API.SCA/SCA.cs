@@ -2765,8 +2765,8 @@ namespace Checkmarx.API.SCA
         public string ReferenceType { get; set; }
 
         /// <summary>link to the package page that can be used as reference</summary>
-        [Newtonsoft.Json.JsonProperty("reference", Required = Newtonsoft.Json.Required.DisallowNull, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
-        public System.Uri Reference { get; set; }
+        [Newtonsoft.Json.JsonProperty("reference", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
+        public System.Uri? Reference { get; set; }
 
         [Newtonsoft.Json.JsonProperty("royaltyFree", Required = Newtonsoft.Json.Required.DisallowNull, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public string RoyaltyFree { get; set; }
